@@ -3,7 +3,7 @@ use std::{thread::sleep, time::Duration};
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use clap::Parser;
 use rand::Rng;
-use tracing::info;
+use tracing::{info, Level};
 
 #[derive(Parser, PartialEq, Eq, Clone, Debug)]
 #[command(version, about)]
@@ -56,6 +56,8 @@ async fn api() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     let args = Args::parse();
     let local_ip = "0.0.0.0";
+
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
     info!(
         "Launching a simple lagging server, listening on {}:{}",

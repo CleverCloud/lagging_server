@@ -1,16 +1,17 @@
-use std::{fs::File, io::BufReader, thread::sleep, time::Duration};
+use std::{thread::sleep, time::Duration};
 
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use clap::Parser;
 use rand::Rng;
-use rustls::{Certificate, PrivateKey, ServerConfig};
-use rustls_pemfile::{certs, pkcs8_private_keys};
 
 #[derive(Parser, PartialEq, Eq, Clone, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(version, about)]
 struct Args {
     #[clap(short = 'p', long = "port")]
     port: u16,
+    // Actix webserver workers
+    #[clap(short = 'w', long = "worker", default_value_t = 4)]
+    worker: u16,
 }
 
 #[get("/")]
@@ -54,7 +55,6 @@ async fn api() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     let args = Args::parse();
     let local_ip = "0.0.0.0";
-    // let rustls_config = load_rustls_config();
 
     println!(
         "Launching a simple lagging server, listening on {}:{}",
@@ -68,40 +68,8 @@ async fn main() -> std::io::Result<()> {
             .service(latency)
             .service(api)
     })
-    .workers(4)
+    .workers(args.worker.into())
     .bind((local_ip, args.port))?
-    // .bind_rustls_021(socket_address, rustls_config)?
     .run()
     .await
-}
-
-pub fn load_rustls_config() -> ServerConfig {
-    // init server config builder with safe defaults
-    let config = ServerConfig::builder()
-        .with_safe_defaults()
-        .with_no_client_auth();
-
-    // load TLS key/cert files
-    let cert_file = &mut BufReader::new(File::open("cert/cert.pem").unwrap());
-    let key_file = &mut BufReader::new(File::open("cert/key.pem").unwrap());
-
-    // convert files to key/cert objects
-    let cert_chain = certs(cert_file)
-        .unwrap()
-        .into_iter()
-        .map(Certificate)
-        .collect();
-    let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file)
-        .unwrap()
-        .into_iter()
-        .map(PrivateKey)
-        .collect();
-
-    // exit if no keys could be parsed
-    if keys.is_empty() {
-        eprintln!("Could not locate PKCS 8 private keys.");
-        std::process::exit(1);
-    }
-
-    config.with_single_cert(cert_chain, keys.remove(0)).unwrap()
 }

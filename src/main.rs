@@ -3,6 +3,7 @@ use std::{thread::sleep, time::Duration};
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use clap::Parser;
 use rand::Rng;
+use tracing::info;
 
 #[derive(Parser, PartialEq, Eq, Clone, Debug)]
 #[command(version, about)]
@@ -16,15 +17,15 @@ struct Args {
 
 #[get("/")]
 async fn hello() -> impl Responder {
-    println!("Received a request, waiting…");
+    info!("Received a request, waiting…");
     for i in 0..10 {
         match i {
-            0 => println!("{} second", i),
-            _ => println!("{} seconds", i),
+            0 => info!("{} second", i),
+            _ => info!("{} seconds", i),
         }
         sleep(Duration::from_secs(1));
     }
-    println!("Responded!");
+    info!("Responded!");
     HttpResponse::Ok().body("Hello world!")
 }
 
@@ -35,7 +36,7 @@ async fn echo(req_body: String) -> impl Responder {
 
 #[get("/latency")]
 async fn latency() -> impl Responder {
-    println!("Receive a GET request on the /latency route");
+    info!("Receive a GET request on the /latency route");
     let mut rng = rand::thread_rng();
     let mut latency: f64 = rng.gen();
     latency = latency * 100.0;
@@ -46,7 +47,7 @@ async fn latency() -> impl Responder {
 
 #[get("/api")]
 async fn api() -> impl Responder {
-    println!("Receive a GET request on the /api route");
+    info!("Receive a GET request on the /api route");
 
     HttpResponse::Ok().body("Hey There!")
 }
@@ -56,7 +57,7 @@ async fn main() -> std::io::Result<()> {
     let args = Args::parse();
     let local_ip = "0.0.0.0";
 
-    println!(
+    info!(
         "Launching a simple lagging server, listening on {}:{}",
         local_ip, args.port
     );

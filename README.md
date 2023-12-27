@@ -1,22 +1,6 @@
 # lagging_server
 
-A simple server that waits for 10 seconds before responding.
-
-Using Actix for this is insanely overkill, but here we are: two lines of code.
-
-Also works in NodeJS but I hate javascript:
-
-```js
-const http = require("http");
-http
-  .createServer(function (req, res) {
-    setTimeout(function () {
-      res.writeHead(204, {});
-      res.end();
-    }, 10_000);
-  })
-  .listen(process.env.PORT || 8080);
-```
+A simple web server use to benchmark sozu. Originally written by @Keksoj
 
 ## Build
 
@@ -42,9 +26,9 @@ _Et cætera_
 
 | curl command                                                    | outcome                                         |
 | :-------------------------------------------------------------- | :---------------------------------------------- |
-| `curl http://localhost:1054/api`                                | replies "Hey there!"                            |
-| `curl http://localhost:1054/latency`                            | replies after a latency period, tells about it  |
-| `curl http://localhost:1054`                                    | should hang for 10 seconds                      |
-| `curl -X POST -d "Do you here me?"  http://localhost:1054/echo` | echoes back to you                              |
+| `curl http://0.0.0.0:1054/api`                                  | replies "Hey there!"                            |
+| `curl http://0.0.0.0:1054/latency`                              | replies after a latency period, tells about it  |
+| `curl http://0.0.0.0:1054`                                      | should hang for 10 seconds                      |
+| `curl -X POST -d "Do you here me?"  http://0.0.0.0:1054/echo`   | echoes back to you                              |
 
 Try it!

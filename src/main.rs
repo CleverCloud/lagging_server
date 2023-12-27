@@ -1,6 +1,6 @@
 use std::{thread::sleep, time::Duration};
 
-use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use clap::Parser;
 use rand::Rng;
 use tracing::{info, Level};
@@ -16,7 +16,7 @@ struct Args {
 }
 
 #[get("/")]
-async fn hello() -> impl Responder {
+async fn hello(req: HttpRequest) -> impl Responder {
     info!("Received a request, waiting…");
     for i in 0..10 {
         match i {

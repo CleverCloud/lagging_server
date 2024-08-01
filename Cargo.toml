@@ -1,5 +1,8 @@
 [package]
 name = "lagging_server"
+description = "a simple web server with latency, for testing purposes"
+homepage = "https://github.com/CleverCloud/lagging_server"
+license-file = "LICENSE"
 version = "0.1.1"
 edition = "2021"
 

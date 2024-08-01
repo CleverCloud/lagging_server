@@ -708,7 +708,7 @@ dependencies = [
 
 [[package]]
 name = "lagging_server"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "actix-web",
  "clap",

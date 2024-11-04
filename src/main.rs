@@ -45,6 +45,17 @@ async fn latency() -> impl Responder {
     HttpResponse::Ok().body(format!("Hi, I come with {} milliseconds latency", latency))
 }
 
+#[get("/bigheader")]
+async fn big_header() -> impl Responder {
+    info!("Respond with a 600KB header");
+
+    let big_header = String::from("All work and no play makes Jack a dull boy. ").repeat(200);
+
+    HttpResponse::Ok()
+        .append_header(("BigHeader", big_header))
+        .body("Hello, I have a big header")
+}
+
 #[get("/api")]
 async fn api() -> impl Responder {
     info!("Receive a GET request on the /api route");
@@ -69,6 +80,7 @@ async fn main() -> std::io::Result<()> {
             .service(hello)
             .service(echo)
             .service(latency)
+            .service(big_header)
             .service(api)
     })
     .workers(args.worker.into())
